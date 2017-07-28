@@ -23,12 +23,17 @@ var map = new mapboxgl.Map({
     zoom: 6.5
 });
 
+var popup = new mapboxgl.Popup({
+    closeButton: false,
+    anchor: 'left',
+    offset:[10, -5]
+});
+
 map.on('load', function () {
     map.addSource("taiwan_city", {
         "type": "geojson",
         "data": "https://raw.githubusercontent.com/jimmybow/twgeojson/master/json/twCounty2010.geo.json"
     });
-
     map.addLayer({
         "id": "city",
         "type": "fill",
@@ -39,7 +44,6 @@ map.on('load', function () {
             "fill-opacity": 0.4
         }
     });
-
     map.addLayer({
         "id": "city-hover",
         "type": "fill",
@@ -56,12 +60,27 @@ map.on('load', function () {
     // the state-fills-hover layer to only show the matching state, thus making a hover effect.
     map.on("mousemove", "city", function(e) {
         map.setFilter("city-hover", ["==", "name", e.features[0].properties.name]);
+        popup.setLngLat(e.lngLat)
+            .setHTML('<h1>' + e.features[0].properties.name + '</h1>')
+            .addTo(map);
+        var content = document.getElementsByClassName('mapboxgl-popup-content')
+        var tip = document.getElementsByClassName('mapboxgl-popup-tip')
+        
+        content[0].children[0].style.color = 'white'
+        content[0].children[0].style.backgroundcolor = 'blue'
+        content[0].children[0].style.webkitMarginBefore = 0
+        content[0].children[0].style.webkitMarginAfter = 0
+        content[0].style.background = 'blue'
+        tip[0].style.borderRightColor = 'blue'
+
     });
 
     // Reset the state-fills-hover layer's filter when the mouse leaves the layer.
     map.on("mouseleave", "city", function() {
         map.setFilter("city-hover", ["==", "name", ""]);
+        popup.remove();        
     });       
+    
 
 });
 </script>
