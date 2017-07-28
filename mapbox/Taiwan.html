@@ -18,7 +18,7 @@
 mapboxgl.accessToken = 'pk.eyJ1IjoiamltbXlib3ciLCJhIjoiY2o0ejF4bmpyMXlwbTMzcjUwcW9sOWM1biJ9.f4QHRqwEhhw_SGbnMQRPBA';
 var map = new mapboxgl.Map({
     container: 'map',
-    style: 'mapbox://styles/mapbox/traffic-day-v2',
+    style: 'mapbox://styles/jimmybow/cj5ns3lrf4nij2qn57c7brts5',
     center: [120.9, 23.9],
     zoom: 6.5
 });
@@ -36,7 +36,7 @@ map.on('load', function () {
         "layout": {},
         "paint": {
             "fill-color": "#627BC1",
-            "fill-opacity": 0.5
+            "fill-opacity": 0.4
         }
     });
 
@@ -47,7 +47,7 @@ map.on('load', function () {
         "layout": {},
         "paint": {
             "fill-color": "#627BC1",
-            "fill-opacity": 1
+            "fill-opacity": 0.6
         },
         "filter": ["==", "name", ""]
     });
@@ -61,7 +61,8 @@ map.on('load', function () {
     // Reset the state-fills-hover layer's filter when the mouse leaves the layer.
     map.on("mouseleave", "city", function() {
         map.setFilter("city-hover", ["==", "name", ""]);
-    });
+    });       
+
 });
 </script>
 
