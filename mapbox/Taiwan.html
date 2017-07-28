@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title></title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+
+<div id='map'></div>
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiamltbXlib3ciLCJhIjoiY2o0ejF4bmpyMXlwbTMzcjUwcW9sOWM1biJ9.f4QHRqwEhhw_SGbnMQRPBA';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/traffic-day-v2',
+    center: [120.9, 23.9],
+    zoom: 6.5
+});
+
+map.on('load', function () {
+    map.addSource("taiwan_city", {
+        "type": "geojson",
+        "data": "https://raw.githubusercontent.com/jimmybow/twgeojson/master/json/twCounty2010.geo.json"
+    });
+
+    map.addLayer({
+        "id": "city",
+        "type": "fill",
+        "source": "taiwan_city",
+        "layout": {},
+        "paint": {
+            "fill-color": "#627BC1",
+            "fill-opacity": 0.5
+        }
+    });
+
+    map.addLayer({
+        "id": "city-hover",
+        "type": "fill",
+        "source": "taiwan_city",
+        "layout": {},
+        "paint": {
+            "fill-color": "#627BC1",
+            "fill-opacity": 1
+        },
+        "filter": ["==", "name", ""]
+    });
+
+    // When the user moves their mouse over the states-fill layer, we'll update the filter in
+    // the state-fills-hover layer to only show the matching state, thus making a hover effect.
+    map.on("mousemove", "city", function(e) {
+        map.setFilter("city-hover", ["==", "name", e.features[0].properties.name]);
+    });
+
+    // Reset the state-fills-hover layer's filter when the mouse leaves the layer.
+    map.on("mouseleave", "city", function() {
+        map.setFilter("city-hover", ["==", "name", ""]);
+    });
+});
+</script>
+
+</body>
+</html>
