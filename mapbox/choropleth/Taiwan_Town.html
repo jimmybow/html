@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title></title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+
+<div id='map'></div>
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiamltbXlib3ciLCJhIjoiY2o0ejF4bmpyMXlwbTMzcjUwcW9sOWM1biJ9.f4QHRqwEhhw_SGbnMQRPBA';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/jimmybow/cj5ns3lrf4nij2qn57c7brts5',
+    center: [120.9, 23.9],
+    zoom: 6.5
+});
+
+var popup = new mapboxgl.Popup({
+    closeButton: false,
+    anchor: 'left',
+    offset:[10, -5]
+});
+
+map.on('load', function () {
+    map.addSource("taiwan", {
+        "type": "geojson",
+        "data": "https://raw.githubusercontent.com/jimmybow/TW-geojson/master/%E5%8F%B0%E7%81%A3%E9%84%89%E9%8E%AE%E7%95%8C.json"
+    });
+    map.addLayer({
+        "id": "taiwan",
+        "type": "fill",
+        "source": "taiwan",
+        "layout": {},
+        "paint": {
+            "fill-color": "#627BC1",
+            "fill-opacity": 0.4
+        }
+    });
+    map.addLayer({
+        "id": "city-hover",
+        "type": "fill",
+        "source": "taiwan",
+        "layout": {},
+        "paint": {
+            "fill-color": "#627BC1",
+            "fill-opacity": 0.6
+        },
+        "filter": ["==", "CountyName", ""]
+    });
+
+    map.addLayer({
+        "id": "town-hover",
+        "type": "fill",
+        "source": "taiwan",
+        "layout": {},
+        "paint": {
+            "fill-color": "#ef78ca",
+            "fill-opacity": 0.6
+        },
+        "filter": ["==", "TownID", ""]
+    });
+
+    // When the user moves their mouse over the states-fill layer, we'll update the filter in
+    // the state-fills-hover layer to only show the matching state, thus making a hover effect.
+    map.on("mousemove", "taiwan", function(e) {
+        map.setFilter("city-hover", ["==", "CountyName", e.features[0].properties.CountyName]);
+        map.setFilter("town-hover", ["==", "TownID", e.features[0].properties.TownID]);
+        popup.setLngLat(e.lngLat)
+            .setHTML('<h1>' + e.features[0].properties.CountyName + '<br><br>' +
+                              e.features[0].properties.TownName + '</h1>')
+            .addTo(map);
+        var content = document.getElementsByClassName('mapboxgl-popup-content')
+        var tip = document.getElementsByClassName('mapboxgl-popup-tip')
+        
+        content[0].children[0].style.color = 'white'
+        content[0].children[0].style.backgroundcolor = 'blue'
+        content[0].children[0].style.webkitMarginBefore = 0
+        content[0].children[0].style.webkitMarginAfter = 0
+        content[0].style.background = 'blue'
+        tip[0].style.borderRightColor = 'blue'
+
+    });
+
+    // Reset the state-fills-hover layer's filter when the mouse leaves the layer.
+    map.on("mouseleave", "taiwan", function() {
+        map.setFilter("city-hover", ["==", "CountyName", ""]);
+        map.setFilter("town-hover", ["==", "TownID", ""]);
+        popup.remove();        
+    });       
+    
+
+});
+</script>
+
+</body>
+</html>
