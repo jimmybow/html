@@ -30,14 +30,14 @@ var popup = new mapboxgl.Popup({
 });
 
 map.on('load', function () {
-    map.addSource("taiwan_city", {
+    map.addSource("taiwan", {
         "type": "geojson",
-        "data": "https://raw.githubusercontent.com/jimmybow/twgeojson/master/json/twCounty2010.geo.json"
+        "data": "https://raw.githubusercontent.com/jimmybow/TW-geojson/master/%E5%8F%B0%E7%81%A3%E7%B8%A3%E5%B8%82%E7%95%8C.json"
     });
     map.addLayer({
-        "id": "city",
+        "id": "taiwan",
         "type": "fill",
-        "source": "taiwan_city",
+        "source": "taiwan",
         "layout": {},
         "paint": {
             "fill-color": "#627BC1",
@@ -47,21 +47,21 @@ map.on('load', function () {
     map.addLayer({
         "id": "city-hover",
         "type": "fill",
-        "source": "taiwan_city",
+        "source": "taiwan",
         "layout": {},
         "paint": {
             "fill-color": "#627BC1",
             "fill-opacity": 0.6
         },
-        "filter": ["==", "name", ""]
+        "filter": ["==", "CountyName", ""]
     });
 
     // When the user moves their mouse over the states-fill layer, we'll update the filter in
     // the state-fills-hover layer to only show the matching state, thus making a hover effect.
-    map.on("mousemove", "city", function(e) {
-        map.setFilter("city-hover", ["==", "name", e.features[0].properties.name]);
+    map.on("mousemove", "taiwan", function(e) {
+        map.setFilter("city-hover", ["==", "CountyName", e.features[0].properties.CountyName]);
         popup.setLngLat(e.lngLat)
-            .setHTML('<h1>' + e.features[0].properties.name + '</h1>')
+            .setHTML('<h1>' + e.features[0].properties.CountyName + '</h1>')
             .addTo(map);
         var content = document.getElementsByClassName('mapboxgl-popup-content')
         var tip = document.getElementsByClassName('mapboxgl-popup-tip')
@@ -76,8 +76,8 @@ map.on('load', function () {
     });
 
     // Reset the state-fills-hover layer's filter when the mouse leaves the layer.
-    map.on("mouseleave", "city", function() {
-        map.setFilter("city-hover", ["==", "name", ""]);
+    map.on("mouseleave", "taiwan", function() {
+        map.setFilter("city-hover", ["==", "CountyName", ""]);
         popup.remove();        
     });       
     
