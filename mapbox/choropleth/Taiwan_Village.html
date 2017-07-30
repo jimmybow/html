@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title></title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+
+<div id='map'></div>
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiamltbXlib3ciLCJhIjoiY2o0ejF4bmpyMXlwbTMzcjUwcW9sOWM1biJ9.f4QHRqwEhhw_SGbnMQRPBA';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/jimmybow/cj5ns3lrf4nij2qn57c7brts5',
+    center: [120.9, 23.9],
+    zoom: 6.5
+});
+
+var popup = new mapboxgl.Popup({
+    closeButton: false,
+    anchor: 'left',
+    offset:[10, -5]
+});
+
+map.on('load', function () {
+    map.addSource("taiwan", {
+        "type": "vector",
+        "url": "mapbox://jimmybow.9f5eb26e"
+    });
+    map.addLayer({
+        "id": "taiwan",
+        "type": "fill",
+        "source": "taiwan",
+        "source-layer": "TW-Village",
+        "layout": {},
+        "paint": {
+            "fill-color": "#627BC1",
+            "fill-opacity": 0.4
+        }
+    });
+    map.addLayer({
+        "id": "city-hover",
+        "type": "fill",
+        "source": "taiwan",
+        "source-layer": "TW-Village",
+        "layout": {},
+        "paint": {
+            "fill-color": "#627BC1",
+            "fill-opacity": 0.6
+        },
+        "filter": ["==", "C_Name", ""]
+    });
+
+    map.addLayer({
+        "id": "town-hover",
+        "type": "fill",
+        "source": "taiwan",
+        "source-layer": "TW-Village",
+        "layout": {},
+        "paint": {
+            "fill-color": "#ef78ca",
+            "fill-opacity": 0.4
+        },
+        "filter": ["==", "TOWN_ID", ""]
+    });
+
+    map.addLayer({
+        "id": "village-hover",
+        "type": "fill",
+        "source": "taiwan",
+        "source-layer": "TW-Village",
+        "layout": {},
+        "paint": {
+            "fill-color": "#ff0000",
+            "fill-opacity": 0.4
+        },
+        "filter": ["==", "VILLAGE_ID", ""]
+    });
+
+    // When the user moves their mouse over the states-fill layer, we'll update the filter in
+    // the state-fills-hover layer to only show the matching state, thus making a hover effect.
+    map.on("mousemove", "taiwan", function(e) {
+        map.setFilter("city-hover", ["==", "C_Name", e.features[0].properties.C_Name]);
+        map.setFilter("town-hover", ["==", "TOWN_ID", e.features[0].properties.TOWN_ID]);
+        map.setFilter("village-hover", ["==", "VILLAGE_ID", e.features[0].properties.VILLAGE_ID]);
+        popup.setLngLat(e.lngLat)
+            .setHTML('<h1>' + e.features[0].properties.C_Name + '<br><br>' +
+                              e.features[0].properties.T_Name + '<br><br>' +
+                              e.features[0].properties.V_Name + '</h1>')
+            .addTo(map);
+        var content = document.getElementsByClassName('mapboxgl-popup-content')
+        var tip = document.getElementsByClassName('mapboxgl-popup-tip')
+        
+        content[0].children[0].style.color = 'white'
+        content[0].children[0].style.backgroundcolor = 'blue'
+        content[0].children[0].style.webkitMarginBefore = 0
+        content[0].children[0].style.webkitMarginAfter = 0
+        content[0].style.background = 'blue'
+        tip[0].style.borderRightColor = 'blue'
+
+    });
+
+    // Reset the state-fills-hover layer's filter when the mouse leaves the layer.
+    map.on("mouseleave", "taiwan", function() {
+        map.setFilter("city-hover", ["==", "C_Name", ""]);
+        map.setFilter("town-hover", ["==", "TOWN_ID", ""]);
+        map.setFilter("village-hover", ["==", "VILLAGE_ID", ""]);
+        popup.remove();        
+    });       
+    
+
+});
+</script>
+
+</body>
+</html>
